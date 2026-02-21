@@ -5,7 +5,7 @@ import time
 #  ______________________
 # 
 
-def fetch_data (param):
+def fetch_data(param):
     print (f"Do something with {param}...")
     time.sleep(param)
     print(f"Done with {param}")
