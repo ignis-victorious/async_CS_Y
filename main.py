@@ -16,10 +16,10 @@ async def fetch_data (param):
 async def main():
     task1 = asyncio.create_task(fetch_data(1))  
     task2 = asyncio.create_task(fetch_data(2.1) ) 
+    result2 = await task2
+    print ("Task 2 fully completed") # Yield control to the event loop (main coroutine suspended till task1 completed)
     result1 = await task1  # Yield control to the event loop (main coroutine suspended till task1 completed)
     print ("Task 1 fully completed")
-    result2 = await task2
-    print ("Task 2 fully completed") 
     return [result1, result2]
 
 
