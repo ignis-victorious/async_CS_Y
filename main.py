@@ -31,6 +31,7 @@ print(results)
 
 t2 = time.perf_counter ()  # Stop the counter
 print(f"Finished in {t2 - t1:.2f} seconds")
+print(".")
 
 
 
