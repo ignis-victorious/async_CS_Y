@@ -21,6 +21,7 @@ def main():
 
 results = main()
 print(results)
+print('Main completed')
 
 
 
