@@ -14,8 +14,8 @@ async def fetch_data (param):
 
 
 async def main():
-    task1 = fetch_data(1)  # Could be awaited directly
-    task2 = fetch_data(2)  # Could be awaited directly
+    task1 = asyncio.create_task(fetch_data(1))  
+    task2 = asyncio.create_task(fetch_data(2.1) ) 
     result1 = await task1
     print ("Task 1 fully completed")
     result2 = await task2
@@ -26,7 +26,7 @@ async def main():
 
 t1 = time.perf_counter()  # Start the counter
 
-results = asyncio.run(main())
+results = asyncio.run(main())  # Create an EVENT LOOP
 print(results)
 
 t2 = time.perf_counter ()  # Stop the counter
