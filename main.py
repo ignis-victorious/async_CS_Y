@@ -1,48 +1,55 @@
-# 
+#
 #  Import LIBRARIES
 import asyncio
 import time
+from concurrent.futures import ProcessPoolExecutor
+
 #  Import FILES
 #  ______________________
-# 
+#
 
-async def fetch_data (param):
-    print(f"Do something with {param}...") 
-    time.sleep(param) # Suspends current task till 'sleep' is completed 
-    # await asyncio.sleep(param) # Suspends current task till 'sleep' is completed 
-    print(f"Done with {param}") 
+
+def fetch_data(param: int) -> str:  # This is now a sync function!
+    print(f"Do something with {param}...", flush=True)
+    time.sleep(param)  # Suspends current task till 'sleep' is completed
+    # await asyncio.sleep(param) # Suspends current task till 'sleep' is completed
+    print(f"Done with {param}", flush=True)
     return f"Result of {param}"
 
 
-async def main():
-    task1 = asyncio.create_task(fetch_data(1))  
-    print("Task 1 created")
-    task2 = asyncio.create_task(fetch_data(2.1)) 
-    print("Task 2 created")
-    # print("Busy for 2.50 seconds")
-    # await asyncio.sleep(2.5)
-    # print("Done with the 2.50 seconds")
-    result1 = await task1  # Suspends main()and yields control to the event loop (main coroutine suspended till task1 completed)
-    print ("Task 1 fully completed")
-    result2 = await task2 # Suspends main()and yields control to the event loop that perform coroutine fetch_data
-    print ("Task 2 fully completed") 
+async def main() -> list[str]:
+    #  Run in Threads
+    task1: asyncio.Task[str] = asyncio.create_task(coro=asyncio.to_thread(fetch_data, 1))
+    task2: asyncio.Task[str] = asyncio.create_task(coro=asyncio.to_thread(fetch_data, 2))
+    result1: str = await task1
+    print("Thread 1 fully completed")
+    result2: str = await task2
+    print("Thread 2 fully completed")
+
+    #  Run in process pool
+    loop: asyncio.AbstractEventLoop = asyncio._get_running_loop()
+
+    with ProcessPoolExecutor() as executor:
+        task_1: asyncio.Future[str] = loop.run_in_executor(executor, fetch_data, 1)
+        task_2: asyncio.Future[str] = loop.run_in_executor(executor, fetch_data, 2)
+
+        result1 = await task_1
+        print("Process 1 fully completed")
+        result2 = await task_2
+        print("Process 2 fully completed")
+
     return [result1, result2]
 
 
+if __name__ == "__main__":
+    t1: float = time.perf_counter()
 
-t1 = time.perf_counter()  # Start the counter
+    print("Start running main")
+    results: list[str] = asyncio.run(main=main())
+    print(results)
 
-results = asyncio.run(main())  # Create an EVENT LOOP
-print(results)
-
-t2 = time.perf_counter ()  # Stop the counter
-print(f"Finished in {t2 - t1:.2f} seconds")
-print(".")
-
-
-
-
-
+    t2: float = time.perf_counter()
+    print(f"Finished in {t2 - t1: .2f} seconds")
 
 
 # def main():
